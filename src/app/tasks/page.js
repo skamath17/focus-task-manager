@@ -23,68 +23,121 @@ export default function HomePage() {
     const color = progress > 50 ? '#22c55e' : progress > 20 ? '#eab308' : '#ef4444';
 
     const timerHTML = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Task Timer</title>
-          <style>
-            body {
-              font-family: Arial, sans-serif;
-              padding: 20px;
-              margin: 0;
-              background: white;
-              overflow: hidden;
-            }
-            .container {
-              text-align: center;
-            }
-            .task-name {
-              font-size: 16px;
-              font-weight: bold;
-              margin-bottom: 10px;
-              color: #374151;
-            }
-            .timer {
-              font-size: 32px;
-              font-weight: bold;
-              margin: 10px 0;
-              color: #111827;
-            }
-            .progress-bar {
-              width: 100%;
-              height: 8px;
-              background: #E5E7EB;
-              border-radius: 4px;
-              overflow: hidden;
-              margin: 10px 0;
-            }
-            .progress {
-              height: 100%;
-              background: ${color};
-              width: ${progress}%;
-              transition: width 1s ease, background-color 1s ease;
-            }
-            .percentage {
-              font-size: 14px;
-              color: #6B7280;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="task-name">${activeTask?.title || ''}</div>
-            <div class="timer">${formatTime(timeLeft)}</div>
-            <div class="progress-bar">
-              <div class="progress"></div>
-            </div>
-            <div class="percentage">${Math.round(progress)}% remaining</div>
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>${activeTask?.title || 'Timer'}</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          padding: 10px;
+          margin: 0;
+          background: white;
+          overflow: hidden;
+        }
+        .container {
+          display: flex;
+          align-items: center;
+          gap: 15px;
+          height: 80px;
+        }
+        .timer {
+          font-size: 36px;
+          font-weight: bold;
+          color: #111827;
+          min-width: 120px;
+        }
+        .progress-container {
+          flex-grow: 1;
+        }
+        .progress-bar {
+          width: 100%;
+          height: 8px;
+          background: #E5E7EB;
+          border-radius: 4px;
+          overflow: hidden;
+        }
+        .progress {
+          height: 100%;
+          background: ${color};
+          width: ${progress}%;
+          transition: width 1s ease, background-color 1s ease;
+        }
+        .percentage {
+          font-size: 14px;
+          color: #6B7280;
+          margin-top: 4px;
+        }
+        .complete-button {
+          cursor: pointer;
+          padding: 8px;
+          border-radius: 50%;
+          transition: background-color 0.2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .complete-button:hover {
+          background-color: #f3f4f6;
+        }
+        .complete-button svg {
+          width: 24px;
+          height: 24px;
+          color: #22c55e;
+        }
+        @keyframes completeAnimation {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.2); }
+          100% { transform: scale(0); }
+        }
+        .completing {
+          animation: completeAnimation 0.5s ease-out forwards;
+        }
+      </style>
+      <script>
+        window.handleComplete = function() {
+          document.getElementById('mainContainer').classList.add('completing');
+          window.opener.postMessage({ type: 'completeTask' }, '*');
+          setTimeout(() => window.close(), 500);
+        }
+      </script>
+    </head>
+    <body>
+      <div class="container" id="mainContainer">
+        <div class="timer">${formatTime(timeLeft)}</div>
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress"></div>
           </div>
-        </body>
-      </html>
+          <div class="percentage">${Math.round(progress)}% remaining</div>
+        </div>
+        <div class="complete-button" 
+            onclick="document.getElementById('mainContainer').classList.add('completing'); 
+                    window.opener.postMessage({ type: 'completeTask' }, '*');
+                    setTimeout(() => window.close(), 500);" 
+            title="Mark as complete">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        </div>
+      </div>
+    </body>
+  </html>
     `;
 
     timerWindow.document.documentElement.innerHTML = timerHTML;
   };
+
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.data.type === 'completeTask' && activeTask) {
+        completeTask(activeTask);
+      }
+    };
+  
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [activeTask]);
 
   // Update timer window when time changes
   useEffect(() => {
@@ -138,8 +191,8 @@ export default function HomePage() {
     }
 
     // Open new timer window
-    const newTimerWindow = window.open('', 'Timer', 
-      'width=300,height=200,resizable=yes,scrollbars=no,toolbar=no,menubar=no,location=no,status=no'
+    const newTimerWindow = window.open('', task.title, 
+      'width=500,height=100,resizable=yes,scrollbars=no,toolbar=no,menubar=no,location=no,status=no'
     );
     setTimerWindow(newTimerWindow);
 
@@ -251,7 +304,7 @@ export default function HomePage() {
             Focus Task Manager
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent>            
           <form onSubmit={addTask} className="flex gap-4 mb-6">
             <input
               type="text"
