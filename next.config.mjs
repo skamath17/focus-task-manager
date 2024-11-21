@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',  // Add this line for better production build
   webpack: (config, { isServer }) => {
     // Add handling for native node modules
     if (!isServer) {
@@ -16,5 +17,4 @@ const nextConfig = {
   },
 };
 
-// Note the export syntax difference for .mjs
 export default nextConfig;
