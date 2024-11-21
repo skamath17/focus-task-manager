@@ -389,6 +389,46 @@ export default function HomePage() {
         </CardContent>
       </Card>
 
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CheckCircle className="w-6 h-6" />
+            Completed Tasks
+          </CardTitle>
+        </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {dailyReport.length === 0 ? (
+                <p className="text-gray-500 text-center py-4">No completed tasks yet</p>
+              ) : (
+                dailyReport.map((task, index) => (
+                  <div 
+                    key={index} 
+                    className="flex items-center justify-between p-3 border rounded-lg bg-gray-50"
+                  >
+                    <div className="flex items-center gap-2">
+                      {task.onTime ? (
+                        <CheckCircle className="w-4 h-4 text-green-500" />
+                      ) : (
+                        <XCircle className="w-4 h-4 text-red-500" />
+                      )}
+                      <span className="font-medium">{task.title}</span>
+                      <span className="text-sm text-gray-500">({task.duration} mins)</span>
+                    </div>
+                    <div className="text-sm">
+                      {task.onTime ? (
+                        <span className="text-green-600">+{task.pointsEarned} points</span>
+                      ) : (
+                        <span className="text-red-600">+0 points</span>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </CardContent>
+      </Card>
+
       {/* Daily Report Card */}
       <Card>
         <CardHeader>
@@ -407,22 +447,6 @@ export default function HomePage() {
               </p>  
             </div>
             
-            <div className="mt-4">
-              <h3 className="font-semibold mb-2">Completed Tasks:</h3>
-              {dailyReport.map((task, index) => (
-                <div key={index} className="flex items-center gap-2 py-2 border-b">
-                  {task.onTime ? (
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                  ) : (
-                    <XCircle className="w-4 h-4 text-red-500" />
-                  )}
-                  <span>{task.title}</span>
-                  <span className="text-sm text-gray-500 ml-auto">
-                    {task.onTime ? `(On time +${task.pointsEarned}pts)` : '(Overtime +0pts)'}
-                  </span>
-                </div>
-              ))}
-            </div>
           </div>
         </CardContent>
       </Card>
