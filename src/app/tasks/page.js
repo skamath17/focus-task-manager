@@ -366,21 +366,21 @@ export default function HomePage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  {task.status === 'pending' && (
-                    <>
-                      <button
-                        onClick={() => completeTask(task)}
-                        className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-                      >
-                        Complete
-                      </button>
-                      <button
-                        onClick={() => startTask(task)}
-                        className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                      >
-                        Start
-                      </button>
-                    </>
+                  {task.status === 'pending' && !task.timedOut && (
+                    <button
+                      onClick={() => startTask(task)}
+                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                      Start
+                    </button>
+                  )}
+                  {task.status === 'pending' && task.timedOut && (
+                    <button
+                      onClick={() => completeTask(task)}
+                      className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                    >
+                      Mark Complete
+                    </button>
                   )}
                 </div>
               </div>
