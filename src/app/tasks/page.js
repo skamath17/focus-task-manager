@@ -357,7 +357,7 @@ export default function HomePage() {
             {tasks.filter(task => task.status !== 'completed').map(task => (
               <div 
                 key={task.id}
-                className="p-4 border rounded flex items-center justify-between"
+                className="p-3 sm:p-4 border rounded flex flex-col sm:flex-row sm:items-center justify-between gap-2"
               >
                 <div className="flex items-center gap-2">
                   {task.timedOut ? (
@@ -374,11 +374,11 @@ export default function HomePage() {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex gap-2 justify-end">
                   {task.status === 'pending' && !task.timedOut && (
                     <button
                       onClick={() => startTask(task)}
-                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 w-full sm:w-auto"
                     >
                       Start
                     </button>
@@ -386,7 +386,7 @@ export default function HomePage() {
                   {task.status === 'pending' && task.timedOut && (
                     <button
                       onClick={() => completeTask(task)}
-                      className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                      className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 w-full sm:w-auto"
                     >
                       Mark Complete
                     </button>

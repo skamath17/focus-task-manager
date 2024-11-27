@@ -11,7 +11,7 @@ export default function HomePage() {
       <div className="max-w-3xl mx-auto px-4">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Focus Task Manager
+            Task Master
           </h1>
           <p className="text-xl text-gray-600">
             Stay focused, track time, earn rewards
