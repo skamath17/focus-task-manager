@@ -12,6 +12,7 @@ export default function HomePage() {
   const [isRunning, setIsRunning] = useState(false);
   const [points, setPoints] = useState(0);
   const [dailyReport, setDailyReport] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
 
   const [timerWindow, setTimerWindow] = useState(null);
 
@@ -129,6 +130,18 @@ export default function HomePage() {
     timerWindow.document.documentElement.innerHTML = timerHTML;
   };
 
+  // Add this useEffect to detect mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640); // 640px is Tailwind's 'sm' breakpoint
+    };
+    
+    checkMobile(); // Check initially
+    window.addEventListener('resize', checkMobile); // Check on resize
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   useEffect(() => {
     const handleMessage = (event) => {
       if (event.data.type === 'completeTask' && activeTask) {
@@ -191,11 +204,13 @@ export default function HomePage() {
       timerWindow.close();
     }
 
-    // Open new timer window
-    const newTimerWindow = window.open('', task.title, 
-      'width=500,height=100,resizable=yes,scrollbars=no,toolbar=no,menubar=no,location=no,status=no'
-    );
-    setTimerWindow(newTimerWindow);
+    // Open new timer window if its on desktop
+    if (!isMobile) {
+      const newTimerWindow = window.open('', task.title, 
+        'width=500,height=100,resizable=yes,scrollbars=no,toolbar=no,menubar=no,location=no,status=no'
+      );
+      setTimerWindow(newTimerWindow);
+    }
 
     setActiveTask(task);
     setTimeLeft(task.duration * 60);
