@@ -312,20 +312,21 @@ export default function HomePage() {
           </CardTitle>
         </CardHeader>
         <CardContent>            
-          <form onSubmit={addTask} className="flex gap-4 mb-6">
-            <input
-              type="text"
-              value={newTask.title}
-              onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-              placeholder="Task name"
-              className="flex-1 p-2 border rounded"
-            />
+        <form onSubmit={addTask} className="flex flex-col sm:flex-row gap-4 mb-6">
+          <input
+            type="text"
+            value={newTask.title}
+            onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+            placeholder="Task name"
+            className="flex-1 p-2 border rounded"
+          />
+          <div className="flex gap-4 sm:w-auto w-full">
             <input
               type="number"
               value={newTask.duration}
               onChange={(e) => setNewTask({ ...newTask, duration: parseInt(e.target.value) })}
               placeholder="Minutes"
-              className="w-20 p-2 border rounded"
+              className="w-24 p-2 border rounded"
             />
             <button 
               type="submit"
@@ -333,7 +334,8 @@ export default function HomePage() {
             >
               Add
             </button>
-          </form>
+          </div>
+        </form>
 
           {activeTask && (
             <div className="mb-6 p-4 bg-blue-50 rounded flex items-center justify-between">
