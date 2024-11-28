@@ -4,14 +4,53 @@ import { Timer, CheckCircle, BarChart, XCircle } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
 
+
+// function to check if this is a new day
+const isNewDay = () => {
+  const lastAccessed = localStorage.getItem('lastAccessDate');
+  const today = new Date().toDateString();
+  
+  if (lastAccessed !== today) {
+    // It's a new day, update the access date
+    localStorage.setItem('lastAccessDate', today);
+    return true;
+  }
+  return false;
+}
+
 export default function HomePage() {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState(() => {
+    if (typeof window !== 'undefined') {
+      if (isNewDay()) {
+        // Clear old data and start fresh
+        localStorage.removeItem('tasks');
+        localStorage.removeItem('points');
+        localStorage.removeItem('dailyReport');
+        return [];
+      }
+      const savedTasks = localStorage.getItem('tasks');
+      return savedTasks ? JSON.parse(savedTasks) : [];
+    }
+    return [];
+  });
   const [newTask, setNewTask] = useState({ title: '', duration: 30 });
   const [activeTask, setActiveTask] = useState(null);
   const [timeLeft, setTimeLeft] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const [points, setPoints] = useState(0);
-  const [dailyReport, setDailyReport] = useState([]);
+  const [points, setPoints] = useState(() => {
+    if (typeof window !== 'undefined' && !isNewDay()) {
+      const savedPoints = localStorage.getItem('points');
+      return savedPoints ? parseInt(savedPoints) : 0;
+    }
+    return 0;
+  });
+  const [dailyReport, setDailyReport] = useState(() => {
+    if (typeof window !== 'undefined' && !isNewDay()) {
+      const savedReport = localStorage.getItem('dailyReport');
+      return savedReport ? JSON.parse(savedReport) : [];
+    }
+    return [];
+  });
   const [isMobile, setIsMobile] = useState(false);
 
   const [timerWindow, setTimerWindow] = useState(null);
@@ -130,6 +169,18 @@ export default function HomePage() {
     timerWindow.document.documentElement.innerHTML = timerHTML;
   };
 
+  useEffect(() => {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }, [tasks]);
+
+  useEffect(() => {
+    localStorage.setItem('points', points.toString());
+  }, [points]);
+
+  useEffect(() => {
+    localStorage.setItem('dailyReport', JSON.stringify(dailyReport));
+  }, [dailyReport]);
+
   // Add this useEffect to detect mobile
   useEffect(() => {
     const checkMobile = () => {
@@ -245,6 +296,7 @@ export default function HomePage() {
     }
 
   };
+
   
   // New function to calculate points based on duration
   const calculatePointsForTask = (duration) => {
